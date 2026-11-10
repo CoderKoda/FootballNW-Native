@@ -1,57 +1,69 @@
-# Sample C++ app for Epsilon
+# FootballNW Native
 
-[![Build](https://github.com/numworks/epsilon-sample-app-cpp/actions/workflows/build.yml/badge.svg)](https://github.com/numworks/epsilon-sample-app-cpp/actions/workflows/build.yml)
+A native C++ football simulation for the NumWorks N0120, built with the EADK.
 
-<img src="/doc/screenshots.gif?raw=true" alt="Sample C++ app for the NumWorks graphing calculator" width="300" align="right">
+This repository is the native rewrite of the original Python FootballNW project. The Python version remains the reference implementation; this repository targets the calculator directly.
 
-This is a sample C++ app to use on a [NumWorks calculator](https://www.numworks.com).
+## Current status
 
-```cpp
+The project currently contains a lightweight application shell:
 
-using namespace EADK;
+- FootballNW home screen
+- Keyboard navigation with Up, Down, OK and Back
+- Placeholder pages for New Match, Teams, Match History and Settings
+- NumWorks NWA build configuration
 
-void eadk_main() {
-  Display::pushRectUniform(
-    Display::Rect(0, 0, 320, 240),
-    Display::Color(0x000000)
-  );
-  while (1) {
-    Keyboard::State kbd = Keyboard::scan();
-    if (kbd.keyDown(Keyboard::Key::OK)) {
-      spaceship.createRockets();
-    }
-    if (kbd.keyDown(Keyboard::Key::Up)) {
-      spaceship.move(0, -Spaceship::k_step);
-    }
-    refreshScene();
-  }
-}
+The football simulation engine has not been ported yet. The next development stages are the team/player data model, match state, event system and simulation engine.
+
+## Requirements
+
+On macOS with Homebrew:
+
+```sh
+brew install numworks/tap/arm-none-eabi-gcc node
 ```
 
-## Build the app
+You also need Git and a USB connection to the calculator for direct installation.
 
-To build this sample app, you will need to install the [embedded ARM toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) and [Node.js](https://nodejs.org/en/). The C SDK for Epsilon apps is shipped as an npm module called [nwlink](https://www.npmjs.com/package/nwlink) that will automatically be installed at compile time.
+## Build
 
-```shell
-brew install numworks/tap/arm-none-eabi-gcc node # Or equivalent on your OS
+From the repository root:
+
+```sh
 make
 ```
 
-You should now have a `target/voord.nwa` file that you can distribute! Anyone can now install it on their calculator from the [NumWorks online uploader](https://my.numworks.com/apps).
+The build produces:
 
-## Run the app locally
+- `target/footballnw.nwa` — installable NumWorks application
+- `target/footballnw.bin` — binary generated from the NWA
 
-To run the app on your development machine, you can use the following command
+The Makefile pins `nwlink@0.0.19` and uses the device EADK compiler flags.
 
-```shell
-# Now connect your NumWorks calculator to your computer using the USB cable
+## Install on a connected calculator
+
+Connect the NumWorks calculator over USB, then run:
+
+```sh
 make run
 ```
 
+Alternatively, upload `target/footballnw.nwa` using the NumWorks application uploader.
+
+## Project layout
+
+```text
+src/
+├── main.cpp
+├── eadkpp.h
+├── icon.png
+└── ui/
+    ├── home_screen.cpp
+    └── home_screen.h
+```
+
+As the simulator grows, its code will be separated into small modules. The target is the N0120's limited resources, so data structures and runtime allocations will be kept bounded and measured on-device.
+
 ## License
 
-This sample app is distributed under the terms of the BSD License. See LICENSE for details.
-
-## Trademarks
-
-NumWorks is a registered trademark.
+See [LICENSE](LICENSE) for the original sample project's BSD license and attribution.
